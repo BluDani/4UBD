@@ -1,0 +1,120 @@
+--Criando a tabela Empregado
+CREATE TABLE empregado (
+    Nome          VARCHAR2(50) NOT NULL,
+    RG            INTEGER NOT NULL,
+    CIC           INTEGER NOT NULL,
+    Depto         INTEGER NOT NULL,
+    RG_supervisor INTEGER,
+    Salario       FLOAT NOT NULL
+);
+
+--Inserindo os valores na tabela Empregado
+INSERT INTO empregado (Nome, RG, CIC, Depto, RG_Supervisor, Salario) VALUES ('João Luiz', '10101010', '11111111', 1, NULL, 3000.00);
+INSERT INTO empregado (Nome, RG, CIC, Depto, RG_Supervisor, Salario) VALUES ('Fernando', '20202020', '22222222', 2, '10101010', 2500.00);
+INSERT INTO empregado (Nome, RG, CIC, Depto, RG_Supervisor, Salario) VALUES ('Ricardo', '30303030', '33333333', 2, '10101010', 2300.00);
+INSERT INTO empregado (Nome, RG, CIC, Depto, RG_Supervisor, Salario) VALUES ('Jorge', '40404040', '44444444', 2, '20202020', 4200.00);
+INSERT INTO empregado (Nome, RG, CIC, Depto, RG_Supervisor, Salario) VALUES ('Renato', '50505050', '55555555', 3, '20202020', 1300.00);
+
+--Criando a tabela Departamento
+CREATE TABLE departamento (
+    Nome       VARCHAR2(50) NOT NULL,
+    Numero     INTEGER NOT NULL,
+    RG_gerente INTEGER NOT NULL
+);
+
+--Inserindo os valores na tabela Departamento
+INSERT INTO departamento (Nome, Numero, RG_Gerente) VALUES ('Contabilidade', 1, '10101010');
+INSERT INTO departamento (Nome, Numero, RG_Gerente) VALUES ('Engenharia Civil', 2, '30303030');
+INSERT INTO departamento (Nome, Numero, RG_Gerente) VALUES ('Engenharia Mec nica', 3, '20202020');
+
+--Criando a tabela Projeto
+CREATE TABLE projeto (
+    Nome   VARCHAR2(50) NOT NULL,
+    Numero INTEGER NOT NULL,
+    Localizacao VARCHAR2(50) NOT NULL
+);
+
+--Inserindo os valores na tabela Projeto
+INSERT INTO projeto (Nome, Numero, localizacao) VALUES ('Financeiro 1', 5, 'São Paulo');
+INSERT INTO projeto (Nome, Numero, localizacao) VALUES ('Motor 3', 10, 'Rio Claro');
+INSERT INTO projeto (Nome, Numero, localizacao) VALUES ('Prédio Central', 20, 'Campinas');
+
+--Criando a tabela Dependentes
+CREATE TABLE dependentes (
+    RG_responsavel  INTEGER NOT NULL,
+    Nome_dependente VARCHAR2(50) NOT NULL,
+    Nascimento      DATE NOT NULL,
+    Relacao         VARCHAR2(20) NOT NULL,
+    Sexo            VARCHAR2(20) NOT NULL
+);
+
+--Inserindo os valores na tabela Dependentes
+INSERT INTO dependentes (RG_Responsavel, Nome_Dependente, Nascimento, Relacao, Sexo) VALUES (10101010, 'Jorge', TO_DATE('27/12/1986', 'DD/MM/YYYY'), 'Filho', 'Masculino');
+INSERT INTO dependentes (RG_Responsavel, Nome_Dependente, Nascimento, Relacao, Sexo) VALUES (10101010, 'Luiz', TO_DATE('18/11/1979', 'DD/MM/YYYY'), 'Filho', 'Masculino');
+INSERT INTO dependentes (RG_Responsavel, Nome_Dependente, Nascimento, Relacao, Sexo) VALUES (20202020, 'Fernanda', TO_DATE('14/02/1969', 'DD/MM/YYYY'), 'C njuge', 'Feminino');
+INSERT INTO dependentes (RG_Responsavel, Nome_Dependente, Nascimento, Relacao, Sexo) VALUES (20202020, ' ngelo', TO_DATE('10/02/1995', 'DD/MM/YYYY'), 'Filho', 'Masculino');
+INSERT INTO dependentes (RG_Responsavel, Nome_Dependente, Nascimento, Relacao, Sexo) VALUES (30303030, 'Adreia', TO_DATE('01/05/1990', 'DD/MM/YYYY'), 'Filho', 'Feminino');
+
+--Criando a tabela Empregado_Projeto
+CREATE TABLE empregado_projeto (
+    RG_empregado INTEGER NOT NULL,
+    Num_projeto  INTEGER NOT NULL,
+    Horas        INTEGER NOT NULL
+);
+
+--Inserindo os valores na tabela Empregado_Projeto
+INSERT INTO empregado_projeto (RG_Empregado, Num_Projeto, Horas) VALUES ('20202020', 5, 10);
+INSERT INTO empregado_projeto (RG_Empregado, Num_Projeto, Horas) VALUES ('20202020', 10, 25);
+INSERT INTO empregado_projeto (RG_Empregado, Num_Projeto, Horas) VALUES ('30303030', 5, 35);
+INSERT INTO empregado_projeto (RG_Empregado, Num_Projeto, Horas) VALUES ('40404040', 20, 50);
+INSERT INTO empregado_projeto (RG_Empregado, Num_Projeto, Horas) VALUES ('50505050', 20, 35);
+
+--Criando a tabela depto_projeto
+CREATE TABLE depto_projeto (
+    Num_depto   INTEGER NOT NULL,
+    Num_projeto INTEGER NOT NULL
+);
+
+--Inserindo os valores na tabela depto_projeto
+INSERT INTO depto_projeto (Num_Depto, Num_Projeto) VALUES (2, 5);
+INSERT INTO depto_projeto (Num_Depto, Num_Projeto) VALUES (3, 10);
+INSERT INTO depto_projeto (Num_Depto, Num_Projeto) VALUES (2, 20);
+
+
+--Criando as dependencias
+ALTER TABLE empregado ADD CONSTRAINT empregado_pk PRIMARY KEY ( rg );
+
+ALTER TABLE departamento ADD CONSTRAINT departamento_pk PRIMARY KEY ( numero );
+
+ALTER TABLE projeto ADD CONSTRAINT projeto_pk PRIMARY KEY ( numero );
+
+ALTER TABLE depto_projeto ADD CONSTRAINT departamento_projeto_pk PRIMARY KEY ( num_depto, num_projeto );
+
+ALTER TABLE dependentes ADD CONSTRAINT dependentes_pk PRIMARY KEY ( rg_responsavel, nome_dependente );
+
+ALTER TABLE empregado_projeto ADD CONSTRAINT empregado_projeto_pk PRIMARY KEY ( rg_empregado, num_projeto );
+
+
+ALTER TABLE empregado
+ADD CONSTRAINT empregado_depto_fk FOREIGN KEY (depto) REFERENCES departamento (numero);
+
+ALTER TABLE empregado
+ADD CONSTRAINT empregado_supervisor_fk FOREIGN KEY (rg_supervisor) REFERENCES empregado (rg);
+
+ALTER TABLE departamento
+ADD CONSTRAINT departamento_gerente_fk FOREIGN KEY (rg_gerente) REFERENCES empregado (rg);
+
+ALTER TABLE depto_projeto
+ADD CONSTRAINT departamento_fk FOREIGN KEY (num_depto) REFERENCES departamento (numero);
+
+ALTER TABLE dependentes
+ADD CONSTRAINT dependentes_empregado_fk FOREIGN KEY (rg_responsavel) REFERENCES empregado (rg);
+
+ALTER TABLE empregado_projeto
+ADD CONSTRAINT empregado_fk FOREIGN KEY (rg_empregado) REFERENCES empregado (rg);
+
+ALTER TABLE depto_projeto
+ADD CONSTRAINT projeto_fk FOREIGN KEY (num_projeto) REFERENCES projeto (numero);
+
+ALTER TABLE empregado_projeto
+ADD CONSTRAINT empregado_projeto_projeto_fk FOREIGN KEY (num_projeto) REFERENCES projeto (numero);
